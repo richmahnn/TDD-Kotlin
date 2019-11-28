@@ -56,7 +56,7 @@ class FetchUserProfileUseCaseSyncTest {
     fun profileSync_fetchUserFails_generalErrorReturned() {
         mUserProfileHttpEndpointSyncTd.mIsGeneralError = true
         val result = SUT.fetchUserProfileSync(USERID)
-        assertThat(result, `is`(FetchUserProfileUseCaseSync.UseCaseResult.SUCCESS))
+        assertThat(result, `is`(FetchUserProfileUseCaseSync.UseCaseResult.FAILURE))
     }
     // If fetch fails, user details should not be cached
 

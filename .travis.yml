@@ -20,7 +20,7 @@ android:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
 script:
-  - ./gradlew build jacocoTestReport assembleAndroidTest
+  - ./gradlew build check
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
