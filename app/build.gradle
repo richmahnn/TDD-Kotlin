@@ -50,6 +50,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        abortOnError false
+    }
 //    sourceSets {
 //        main.java.srcDirs += 'src/main/java'
 //        test.java.srcDirs += 'src/test/java'
