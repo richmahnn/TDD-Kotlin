@@ -24,9 +24,9 @@ class FetchUserProfileUseCaseSync(
             endpointResult = mUserProfileHttpEndpointSync.getUserProfile(userId)
             // the bug here is that I don't check for successful result and it's also a duplication
             // of the call later in this method
-            when(endpointResult.status) {
-                UseCaseResult.SUCCESS ->
-            }
+//            when(endpointResult.status) {
+//                UseCaseResult.SUCCESS ->
+//            }
             mUsersCache.cacheUser(
                 User(userId, endpointResult.getFullName(), endpointResult.getImageUrl())
             )
