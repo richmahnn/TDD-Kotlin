@@ -1,9 +1,12 @@
 package com.lubulwa.tddkotlin.example5
 
+import com.lubulwa.tddkotlin.example4.networking.NetworkErrorException
 import com.lubulwa.tddkotlin.example5.networking.UserProfileHttpEndpointSync
 import com.lubulwa.tddkotlin.example5.users.User
 import com.lubulwa.tddkotlin.example5.users.UsersCache
+import com.nhaarman.mockitokotlin2.isNull
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.nullValue
 import org.junit.Before
 
 import org.junit.Assert.*
@@ -59,9 +62,37 @@ class FetchUserProfileUseCaseSyncTest {
         assertThat(result, `is`(FetchUserProfileUseCaseSync.UseCaseResult.FAILURE))
     }
     // If fetch fails, user details should not be cached
+    @Test
+    fun profileSync_fetchUserProfileGeneralError_userNotCached() {
+        mUserProfileHttpEndpointSyncTd.mIsGeneralError = true
+        SUT.fetchUserProfileSync(USERID)
+        val user = mUsersCacheTd.getUser(USERID)!!
+        assertThat(user.fullName, `is`(""))
+    }
 
+    @Test
+    fun profileSync_fetchUserProfileAuthError_userNotCached() {
+        mUserProfileHttpEndpointSyncTd.mIsAuthError = true
+        SUT.fetchUserProfileSync(USERID)
+        val user = mUsersCacheTd.getUser(USERID)!!
+        assertThat(user.fullName, `is`(""))
+    }
+
+    @Test
+    fun profileSync_fetchUserProfileServerError_userNotCached() {
+        mUserProfileHttpEndpointSyncTd.mIsServerError = true
+        SUT.fetchUserProfileSync(USERID)
+        val user = mUsersCacheTd.getUser(USERID)!!
+        assertThat(user.fullName, `is`(""))
+    }
 
     // If network error, network error returned
+    @Test
+    fun profileSync_fetchUserProfileFailed_networkErrorReturned() {
+        mUserProfileHttpEndpointSyncTd.mIsNetworkError = true
+        val result = SUT.fetchUserProfileSync(USERID)
+        assertThat(result, `is`(FetchUserProfileUseCaseSync.UseCaseResult.NETWORK_ERROR))
+    }
 
 
     private inner class UserProfileHttpEndpointSyncTd : UserProfileHttpEndpointSync {
@@ -71,6 +102,7 @@ class FetchUserProfileUseCaseSyncTest {
         var mIsGeneralError = false
         var mIsAuthError = false
         var mIsServerError = false
+        var mIsNetworkError = false
 
         override fun getUserProfile(userId: String): UserProfileHttpEndpointSync.EndpointResult {
             this.userId = userId
@@ -88,6 +120,7 @@ class FetchUserProfileUseCaseSyncTest {
                     UserProfileHttpEndpointSync.EndpointResultStatus.SERVER_ERROR,
                     "", "", ""
                 )
+                mIsNetworkError -> throw NetworkErrorException()
                 else -> return UserProfileHttpEndpointSync.EndpointResult(
                     UserProfileHttpEndpointSync.EndpointResultStatus.SUCCESS,
                     USERID, FULLNAME, IMAGEURL
